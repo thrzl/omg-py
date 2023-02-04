@@ -27,6 +27,8 @@ class PurlRequestor:
 
     def retrieve(self, purl, address=None) -> Purl:
         un = address or self.default_username
+        if not un:
+            raise Exception("Please include a username!")
         if purl is None: raise Exception("please include a purl!")
         r = self.api.request(f"/address/{un}/purl/{purl}")
         return Purl(name=r['response']['purl']['name'], url=r['response']['purl']['url'], address=un, api=self.api,
@@ -34,6 +36,8 @@ class PurlRequestor:
 
     def retrieve_all(self, address=None) -> List[Purl]:
         un = address or self.default_username
+        if not un:
+            raise Exception("Please include a username!")
         r = self.api.request(f"/address/{un}/purls")
         purls = r['response']['purls']
         ls = [Purl(name=x['name'], url=x['url'], address=un, api=self.api, counter=x['counter']) for x in purls]
@@ -41,6 +45,8 @@ class PurlRequestor:
 
     def create(self, name, url, address=None) -> Purl:
         un = address or self.default_username
+        if not un:
+            raise Exception("Please include a username!")
         if name is None:
             raise Exception("Please include a name for the purl (the short link)")
         if url is None:

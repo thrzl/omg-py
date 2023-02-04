@@ -31,6 +31,8 @@ class PasteBinRequestor:
 
     def retrieve(self, paste: str, address: Optional[str] = None) -> Paste:
         un = address or self.default_username
+        if not un:
+            raise Exception("Please include a username!")
         if paste is None:
             raise Exception("please include a paste!")
         r = self.api.request(f"/address/{un}/pastebin/{paste}")
@@ -38,13 +40,17 @@ class PasteBinRequestor:
 
     def retrieve_all(self, address: str=None) -> List[Paste]:
         un = address or self.default_username
+        if not un:
+            raise Exception("Please include a username!")
         r = self.api.request(f"/address/{un}/pastebin")
         pastes = r['response']['pastebin']
-        ls = [Paste(**x, api=self.api,address=un) for x in pastes]
+        ls = [Paste(**paste, api=self.api,address=un,listed=paste.get("listed", True)) for paste in pastes]
         return ls
 
     def create(self, title: str, content: str, listed: bool=True, address: Optional[str]=None) -> Paste:
         un = address or self.default_username
+        if not un:
+            raise Exception("Please include a username!")
         if title is None:
             raise Exception("Please include a title for the paste!")
         if content is None:
